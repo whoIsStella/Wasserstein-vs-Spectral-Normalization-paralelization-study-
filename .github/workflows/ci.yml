@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: Install
+        run: pip install -e '.[dev]'
+      - name: Test
+        run: pytest -q
+      - name: CPU smoke benchmark
+        run: |
+          python -m gan_bench.train --mode wgan_gp --device cpu --steps 2 --warmup-steps 1 --batch-size 8 --data-dim 16 --hidden-dim 32 --latent-dim 8 --critic-steps 1
+          python -m gan_bench.train --mode spectral_norm --device cpu --steps 2 --warmup-steps 1 --batch-size 8 --data-dim 16 --hidden-dim 32 --latent-dim 8 --critic-steps 1

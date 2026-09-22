@@ -1,0 +1,1 @@
+"""Portable GAN parallelization benchmark."""
